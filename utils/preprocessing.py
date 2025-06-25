@@ -3,6 +3,7 @@ import numpy as np
 import os
 
 def apply_mask(image: Image.Image, mask: Image.Image, feather_radius=3):
+    
     image = image.convert("RGBA")
     mask = mask.convert("L")
 
@@ -14,13 +15,7 @@ def apply_mask(image: Image.Image, mask: Image.Image, feather_radius=3):
     return combined
 
 def replace_background(foreground: Image.Image, background_input, size_cm=(3, 4), dpi=300):
-    """
-    :param foreground: Gambar orang (hasil masking)
-    :param background_input: Bisa berupa nama warna (str) atau objek Image (custom background)
-    :param size_cm: Ukuran pas foto (lebar, tinggi) dalam cm
-    :param dpi: Resolusi DPI
-    :return: Gambar akhir dengan background
-    """
+
     width = int(size_cm[0] / 2.54 * dpi)
     height = int(size_cm[1] / 2.54 * dpi)
 
