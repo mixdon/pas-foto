@@ -9,11 +9,11 @@ from utils.preprocessing import apply_mask, replace_background
 app = Flask(__name__)
 
 # Download model jika belum ada
-model_path = "model/u2netp.pth"
+model_path = "model/u2net.pth"
 if not os.path.exists(model_path):
     os.makedirs("model", exist_ok=True)
     print("Downloading model...")
-    url = "https://huggingface.co/someone/u2netp/resolve/main/u2netp.pth"  # Ganti URL dengan yang benar
+    url = "https://huggingface.co/mixdon/u2netp/resolve/main/u2net.pth"
     urllib.request.urlretrieve(url, model_path)
 
 # Load model

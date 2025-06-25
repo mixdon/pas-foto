@@ -3,5 +3,4 @@ torch
 torchvision
 pillow
 gunicorn
-gdown
 numpy
