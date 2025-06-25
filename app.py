@@ -2,19 +2,21 @@ from flask import Flask, render_template, request, send_file
 from PIL import Image
 import os
 import io
-import gdown
+import urllib.request
 from utils.segmentation import load_model, get_segmentation_mask
 from utils.preprocessing import apply_mask, replace_background
 
 app = Flask(__name__)
 
-# Gunakan model U2NETP (versi kecil, sekitar 4MB)
+# Download model jika belum ada
 model_path = "model/u2netp.pth"
 if not os.path.exists(model_path):
-    url = "https://drive.google.com/uc?id=1rbSTGKAE-MTxBYHd-51l2hMOQPT_7EPy"  # U2NETP
     os.makedirs("model", exist_ok=True)
-    gdown.download(url, model_path, quiet=False)
+    print("Downloading model...")
+    url = "https://huggingface.co/someone/u2netp/resolve/main/u2netp.pth"  # Ganti URL dengan yang benar
+    urllib.request.urlretrieve(url, model_path)
 
+# Load model
 model = load_model(model_path)
 
 @app.route('/')
@@ -60,4 +62,5 @@ def process():
     return send_file(buf, mimetype='image/jpeg', as_attachment=True, download_name='pasfoto.jpg')
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)
