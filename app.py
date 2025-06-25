@@ -8,10 +8,10 @@ from utils.preprocessing import apply_mask, replace_background
 
 app = Flask(__name__)
 
-# Pastikan model tersedia
-model_path = "model/u2net.pth"
+# Gunakan model U2NETP (versi kecil, sekitar 4MB)
+model_path = "model/u2netp.pth"
 if not os.path.exists(model_path):
-    url = "https://drive.google.com/uc?id=18Sk_lZ-OKQ8-uzxGI1Ee0VjHItZsqyns"
+    url = "https://drive.google.com/uc?id=1rbSTGKAE-MTxBYHd-51l2hMOQPT_7EPy"  # U2NETP
     os.makedirs("model", exist_ok=True)
     gdown.download(url, model_path, quiet=False)
 
