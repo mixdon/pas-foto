@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Pas Foto Otomatis</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 40px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("{{ url_for('static', filename='bg.png') }}") no-repeat center center fixed;
+      background-size: cover;
+      opacity: 0.4;
+      z-index: -1;
+    }
+
+    #dropzone {
+      border: 2px dashed #000;
+      padding: 40px 150px;
+      text-align: center;
+      border-radius: 12px;
+      cursor: pointer;
+      background-color: #eee;
+      transition: background-color 0.3s;
+      font-weight: bold;
+      z-index: 10;
+      position: fixed;
+      top: 50%;
+      right: 5%;
+      transform: translateY(-50%);
+    }
+
+    .dropzone-top {
+      position: relative !important;
+      top: auto !important;
+      right: auto !important;
+      transform: none !important;
+      margin-bottom: 30px;
+    }
+
+    .container {
+      background-color: transparent;
+      padding: 30px;
+      width: 95%;
+      max-width: 1000px;
+      display: none;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-sizing: border-box;
+    }
+
+    .left-column.card {
+      flex: 2;
+      min-width: 320px;
+    }
+
+    .right-column.card {
+      flex: 1;
+      min-width: 260px;
+      display: none;
+    }
+
+    .right-column.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .preview-section img {
+      max-width: 100%;
+      border-radius: 10px;
+      display: block;
+      margin: auto;
+      outline: 2px solid black;
+    }
+
+    .color-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .color-box {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .color-box.selected {
+      border-color: black;
+    }
+
+    .color-box.upload-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid black;
+      font-size: 18px;
+      font-weight: bold;
+      background-color: transparent;
+      color: black;
+    }
+
+    .color-box.upload-box.selected {
+      background-color: #ccc;
+    }
+
+    .radio-group {
+      margin: 10px 0;
+    }
+
+    .radio-group input {
+      margin-right: 5px;
+    }
+
+    .size-fields {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .size-fields input {
+      flex: 1;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    #download-btn {
+      background-color: #007BFF;
+      color: white;
+      padding: 12px 0;
+      border: none;
+      border-radius: 6px;
+      margin-top: 20px;
+      display: none;
+      width: 100%;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    #download-btn:hover {
+      background-color: #005fcc;
+    }
+
+    #loading-indicator {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="dropzone">
+    <span>Drop Image Here</span><br>
+    <span>or</span><br>
+    <span>Click to Upload</span>
+  </div>
+
+  <div class="container" id="mainContainer">
+    <div class="left-column card">
+      <div class="preview-section">
+        <input type="file" id="fileInput" accept="image/*" style="display:none;">
+        <img id="finalPreview" src="" style="display:none;">
+        <div id="loading-indicator">⏳ Sedang diproses...</div>
+      </div>
+    </div>
+
+    <div class="right-column card" id="optionsPanel">
+      <div class="controls-section">
+        <label>Pilih Background Foto:</label>
+        <div class="color-options">
+          <div class="color-box" data-color="red" style="background:red;"></div>
+          <div class="color-box" data-color="blue" style="background:blue;"></div>
+          <div class="color-box" data-color="white" style="background:white; border:1px solid #ccc;"></div>
+          <div class="color-box" data-color="lightgray" style="background:lightgray;"></div>
+          <div class="color-box" data-color="darkgray" style="background:darkgray;"></div>
+          <div class="color-box" data-color="black" style="background:black;"></div>
+          <div class="color-box" data-color="green" style="background:green;"></div>
+          <div class="color-box" data-color="yellow" style="background:yellow;"></div>
+          <div class="color-box" data-color="orange" style="background:orange;"></div>
+          <div class="color-box" data-color="brown" style="background:brown;"></div>
+          <div class="color-box upload-box" id="uploadCustomBg">+</div>
+        </div>
+        <input type="file" id="customBgInput" accept="image/*" style="display:none;">
+
+        <label>Ukuran Pas Foto (cm):</label>
+        <div class="radio-group">
+          <input type="radio" name="size" value="2x3" checked> 2x3
+          <input type="radio" name="size" value="3x4"> 3x4
+          <input type="radio" name="size" value="4x6"> 4x6
+          <input type="radio" name="size" value="custom"> Custom
+        </div>
+        <div class="size-fields" id="customSizeFields" style="display:none;">
+          <input type="number" id="customWidth" placeholder="Lebar (cm)" min="1" step="0.1">
+          <input type="number" id="customHeight" placeholder="Tinggi (cm)" min="1" step="0.1">
+        </div>
+
+        <a id="download-btn" href="#" download="pasfoto.jpg">Download Gambar</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const finalPreview = document.getElementById('finalPreview');
+    const downloadBtn = document.getElementById('download-btn');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const optionsPanel = document.getElementById('optionsPanel');
+    const mainContainer = document.getElementById('mainContainer');
+    const customBgInput = document.getElementById('customBgInput');
+    const uploadCustomBox = document.getElementById('uploadCustomBg');
+
+    let selectedFile = null;
+    let selectedColor = 'white';
+    let customBgFile = null;
+
+    dropzone.addEventListener('click', () => fileInput.click());
+    dropzone.addEventListener('dragover', e => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('drop', e => {
+      e.preventDefault();
+      selectedFile = e.dataTransfer.files[0];
+      showMainUI();
+      autoProcess();
+    });
+
+    fileInput.addEventListener('change', e => {
+      selectedFile = e.target.files[0];
+      showMainUI();
+      autoProcess();
+    });
+
+    document.querySelectorAll('.color-box').forEach(box => {
+      box.addEventListener('click', () => {
+        document.querySelectorAll('.color-box').forEach(b => b.classList.remove('selected'));
+        box.classList.add('selected');
+        selectedColor = box.dataset.color || 'white';
+        customBgFile = null;
+        autoProcess();
+      });
+    });
+
+    uploadCustomBox.addEventListener('click', () => customBgInput.click());
+
+    customBgInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) {
+        customBgFile = file;
+        selectedColor = 'white';
+        document.querySelectorAll('.color-box').forEach(b => b.classList.remove('selected'));
+        uploadCustomBox.classList.add('selected');
+        autoProcess();
+      }
+    });
+
+    document.querySelectorAll('input[name="size"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        const isCustom = radio.value === 'custom';
+        document.getElementById('customSizeFields').style.display = isCustom ? 'flex' : 'none';
+        autoProcess();
+      });
+    });
+
+    document.getElementById('customWidth').addEventListener('input', autoProcess);
+    document.getElementById('customHeight').addEventListener('input', autoProcess);
+
+    function showMainUI() {
+      mainContainer.style.display = 'flex';
+      optionsPanel.classList.add('active');
+      dropzone.classList.add('dropzone-top');
+    }
+
+    async function autoProcess() {
+      if (!selectedFile) return;
+
+      loadingIndicator.style.display = 'block';
+      finalPreview.style.display = 'none';
+      downloadBtn.style.display = 'none';
+
+      const formData = new FormData();
+      formData.append('image', selectedFile);
+      formData.append('color', selectedColor);
+
+      const selectedSize = document.querySelector('input[name="size"]:checked').value;
+      formData.append('size', selectedSize);
+
+      if (selectedSize === 'custom') {
+        formData.append('custom_width', document.getElementById('customWidth').value);
+        formData.append('custom_height', document.getElementById('customHeight').value);
+      }
+
+      if (customBgFile) {
+        formData.append('background', customBgFile);
+      }
+
+      try {
+        const res = await fetch('/process', {
+          method: 'POST',
+          body: formData
+        });
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        finalPreview.src = url;
+        finalPreview.style.display = 'block';
+        downloadBtn.href = url;
+        downloadBtn.style.display = 'block';
+      } catch (e) {
+        alert('Terjadi kesalahan saat memproses gambar.');
+      } finally {
+        loadingIndicator.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+
+</html>
