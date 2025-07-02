@@ -23,7 +23,7 @@ Clone this repository.
 
 Install the dependencies:
 
-``` pip install -r requirements.txt
+``` pip install -r requirements.txt ```
 Run the project:
 
-```python app.py
+```python app.py```
