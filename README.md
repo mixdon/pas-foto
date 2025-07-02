@@ -18,12 +18,12 @@ Proyek ini membangun sistem otomatis berbasis Computer Vision untuk menghapus da
 
 Sistem ini memudahkan pembuatan pas foto formal untuk keperluan seperti KTP, CV, ijazah, paspor, dan kebutuhan resmi lainnya.
 
-##How to Run Project
+### How to Run Project
 Clone this repository.
 
 Install the dependencies:
 
-``pip install -r requirements.txt
+``` pip install -r requirements.txt
 Run the project:
 
-``python app.py
+```python app.py
