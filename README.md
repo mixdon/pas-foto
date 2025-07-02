@@ -17,3 +17,13 @@ Proyek ini membangun sistem otomatis berbasis Computer Vision untuk menghapus da
 - Flask (backend aplikasi)
 
 Sistem ini memudahkan pembuatan pas foto formal untuk keperluan seperti KTP, CV, ijazah, paspor, dan kebutuhan resmi lainnya.
+
+##How to Run Project
+Clone this repository.
+
+Install the dependencies:
+
+``pip install -r requirements.txt
+Run the project:
+
+``python app.py
